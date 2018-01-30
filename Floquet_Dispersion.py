@@ -3,8 +3,8 @@
 # for a square lattice
 # This program is written to regenerate the results of Ref:
 # T. Kitagawa, et. al. "Topological characterization of periodically driven
-# quantum systems", Phys. Rev. B 82, 235114 (2010)
-
+# Study of Floquet system based on paper Phys. Rev. B 82, 235114 (2010)
+# 
 # Author: Amin Ahmdi
 # Date(i): Oct 11, 2017
 # Date(3): Nov  6, 2017   more structured version
@@ -16,80 +16,22 @@
 # ################################################################
 import numpy as np
 import numpy.linalg as lg
-
-def make_sq(mlat):
-    """ Constructs the Hamiltonian and the connection 
-    matrix of a square lattice
-    0--0   h:= |
-    |  |   tau:= --
-    0--0
-    |  |
-    0--0
-    returns: unitcell hamiltonian h
-             hopping matrix       tau
-    """
-    # sites from one slice are connected to the
-    # next slice with same labels
-    tau = -np.eye(mlat,dtype=complex)
-    h = np.zeros((mlat,mlat), dtype=complex)
-    
-    for i in range(mlat-1):
-        h[i,i+1] = -1.0
-        h[i+1,i] = np.conjugate(h[i,i+1])
-
-    return h, tau
-
-############################################################
-def make_Gr(mlat, J1=1, J2=1, J3=1):
-    """ Constructs the Hamiltonian and the connection 
-    matrix of an armchair graphene strip
-    0--o  0--o
-    |  |  |  |
-    o  0--o  0
-    |  |  |  |
-    0--o  0--o
-    |  |  |  |
-    o  0--o  0
-    |  |  |  |
-    0--o  0--o
-    returns: unitcell hamiltonian h
-             hopping matrix       tau
-    """
-    NN = 2*mlat                 # # of sites in one super unitcell
-    tau = -np.zeros((NN, NN),dtype=complex)
-    h = np.zeros((NN,NN), dtype=complex)
-
-    # translational cell's Hamiltonian
-    for i in range(mlat-1):
-        if (i%2==0):
-            h[i,i+1] = J1
-            h[mlat+i,mlat+i+1] = J2
-            h[i,mlat+i] = J3    # horizoltal connection
-        elif (i%2==1):
-            h[i,i+1] = J2
-            h[mlat+i,mlat+i+1] = J1
-            
-    h = h + h.conj().T          # make it hermitian
-
-    # Hopping matrix
-    for i in range(1,mlat,2):
-        tau[i+mlat,i] = J3
-
-    return h, tau
-
+import Floquet_2D as FL
 ############################################################
 ##############         Main Program     ####################
 ############################################################
-N_k = 101                                # Num of k-points,  odd number to exclude zero
+N_k = 101                                # Num of k-points, 
+                                         # odd number to exclude zero
 N_t = 3                                  # Num of time intervals
 T = 1.                                   # One period of driven field
+
 # During each iterval T/N_t, the Hamiltonian is time-independent
-mlat = input("Graphene strip width: ")                # width of strip
+mlat = input("Graphene strip width: ")   # width of strip
 NN = 2*mlat
-H_k = np.zeros((NN,NN), dtype=complex)     # k-representation H
-E_k = np.zeros((NN), dtype=complex)        # eigenenergies
-E_real = np.zeros((NN), dtype=float)       # eigenenergies
-psi_k = np.zeros((NN,NN), dtype=complex)   # matrix of eigenvectors
+H_k = np.zeros((NN,NN), dtype=complex)   # k-representation H
+E_k = np.zeros((NN), dtype=complex)      # eigenenergies
+E_real = np.zeros((NN), dtype=float)     # eigenenergies
+psi_k = np.zeros((NN,NN), dtype=complex) # matrix of eigenvectors
 
 # different hopping amplitude
 delta = input("Enter the hopping difference coefficient: ") 
@@ -111,7 +53,7 @@ for ik in range(N_k):
             J1=J; J2=J; J3=delta*J
 
         # construct the Hamiltonian and hopping matrices
-        h, tau = make_Gr(mlat , J1, J2, J3)
+        h, tau = FL.make_Gr(mlat , J1, J2, J3)
         tau_dg = tau.conj().T 
 
         # Construct matrix: [h + tau*exp(ika) + tau^+ * exp(-ika)]
