@@ -111,7 +111,7 @@ N_k = 100                                # Num of k-points
 N_t = 3                                  # Num of time intervals
 T = 1.                                   # One period of driven field
 # During each iterval T/N_t, the Hamiltonian is time-independent
-mlat = input("Graphene strip width: ")                # width of strip
+mlat = int(input("Graphene strip width: "))                # width of strip
 NN = 2*mlat
 H_k = np.zeros((NN,NN), dtype=complex)   # k-representation H
 E_k = np.zeros((NN), dtype=complex)      # eigenenergies
@@ -119,7 +119,7 @@ E_real = np.zeros((NN), dtype=float)      # eigenenergies
 psi_k = np.zeros((NN,NN), dtype=complex) # matrix of eigenvectors
 
 # different hopping amplitude
-delta = input("Enter the hopping difference coefficient: ") 
+delta = float(input("Enter the hopping difference coefficient: ")) 
 J = np.pi/16.                            # hopping amplitude 
 data_plot = np.zeros((N_k, NN+1), dtype=float)
 

@@ -26,7 +26,7 @@ N_t = 3                                  # Num of time intervals
 T = 1.                                   # One period of driven field
 
 # During each iterval T/N_t, the Hamiltonian is time-independent
-mlat = input("Graphene strip width: ")   # width of strip
+mlat = int(input("Graphene strip width: "))   # width of strip
 NN = 2*mlat
 H_k = np.zeros((NN,NN), dtype=complex)   # k-representation H
 E_k = np.zeros((NN), dtype=complex)      # eigenenergies
@@ -34,7 +34,7 @@ E_real = np.zeros((NN), dtype=float)     # eigenenergies
 psi_k = np.zeros((NN,NN), dtype=complex) # matrix of eigenvectors
 
 # different hopping amplitude
-delta = input("Enter the hopping difference coefficient: ") 
+delta = float(input("Enter the hopping difference coefficient: ")) 
 J = np.pi/16.                             # hopping amplitude 
 data_plot = np.zeros((N_k, NN+1), dtype=float)
 
@@ -46,14 +46,14 @@ for ik in range(N_k):
     M_eff = np.eye((NN), dtype=complex)   # aux matrix
     for it in range(N_t):
         if   (it==0 ):
-            J1=delta*J; J2=J; J3=J
+            Jtup = (delta*J,J,J)
         elif (it==1):
-            J1=J; J2=delta*J; J3=J
+            Jtup = (J,delta*J,J)
         elif (it==2):
-            J1=J; J2=J; J3=delta*J
+            Jtup = (J,J,delta*J)
 
         # construct the Hamiltonian and hopping matrices
-        h, tau = FL.make_Gr(mlat , J1, J2, J3)
+        h, tau = FL.make_Gr(mlat, *Jtup)
         tau_dg = tau.conj().T 
 
         # Construct matrix: [h + tau*exp(ika) + tau^+ * exp(-ika)]
