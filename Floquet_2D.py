@@ -6,7 +6,7 @@
 
 import numpy as np
 ############################################################
-def make_sq(mlat, *J):
+def make_sq(mlat, dAB, *J):
     """Constructs the Hamiltonian and the connection 
     matrix of a bipartite square lattice. 
     0--o  0--o    
@@ -45,12 +45,16 @@ def make_sq(mlat, *J):
     
     for i in range(mlat-1):
         if (i%2==0):
+            h[i,i] = dAB/2.                  # on-site energy
+            h[mlat+i,mlat+i] = -dAB/2.       # on-site energy            
             h[i, mlat+i] = J[0]
             h[i, i+1] = J[1]
             h[mlat+i, mlat+i+1] = J[3]
             #
             tau[mlat+i, i] = J[2]
         elif (i%2==1):
+            h[i,i] = -dAB/2.                # on-site energy
+            h[mlat+i,mlat+i] = dAB/2.       # on-site energy            
             h[i, mlat+i] = J[2]
             h[i, i+1] = J[3]
             h[mlat+i, mlat+i+1] = J[1]
@@ -61,15 +65,19 @@ def make_sq(mlat, *J):
 
     # The upper edge site
     if (mlat-1 % 2==0):
+        h[mlat-1, mlat-1] = dAB/2.                  # on-site energy
+        h[NN-1,NN-1] = -dAB/2.                      # on-site energy            
         h[mlat-1, NN-1] = J[0]
         #
         tau[NN-1, mlat-1] = J[2]
     elif (mlat-1 % 2==1):
+        h[mlat-1, mlat-1] = -dAB/2.                 # on-site energy
+        h[NN-1,NN-1] = dAB/2.                       # on-site energy            
         h[mlat-1, NN-1] = J[2]
         #
         tau[NN-1, mlat-1] = J[0]        
     
-
+    h = h + h.conj().T          # make it hermitian
     return h, tau
 
 ############################################################
