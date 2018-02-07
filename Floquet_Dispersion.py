@@ -20,7 +20,7 @@ import Floquet_2D as FL
 ############################################################
 ##############         Main Program     ####################
 ############################################################
-N_k = 101                                # Num of k-points, 
+N_k = 100                                # Num of k-points, 
                                          # odd number to exclude zero
 N_t = 3                                  # Num of time intervals
 T = 1.                                   # One period of driven field
@@ -32,6 +32,8 @@ H_k = np.zeros((NN,NN), dtype=complex)   # k-representation H
 E_k = np.zeros((NN), dtype=complex)      # eigenenergies
 E_real = np.zeros((NN), dtype=float)     # eigenenergies
 psi_k = np.zeros((NN,NN), dtype=complex) # matrix of eigenvectors
+# UF_F = np.zeros((mlat,mlat), dtype=complex) # U up to Fermi level
+W_loop = np.eye((mlat), dtype=complex)# matrix to to Wilson loop calculation
 
 # different hopping amplitude
 delta = float(input("Enter the hopping difference coefficient: ")) 
@@ -41,7 +43,7 @@ data_plot = np.zeros((N_k, NN+1), dtype=float)
 # loop over k, first BZ 
 for ik in range(N_k):
 
-    ka = -np.pi/3. +  ik*(2.*np.pi)/(3.*N_k)
+    ka = ik*(2.*np.pi)/(N_k)
     # ka = ik*(np.pi/N_k)
     M_eff = np.eye((NN), dtype=complex)   # aux matrix
     for it in range(N_t):
@@ -75,11 +77,27 @@ for ik in range(N_k):
 
 
     E_Fl, UF = lg.eig(M_eff)
+        
     E_real = np.log(E_Fl).imag
-    E_sort = np.sort(E_real)
+    indx = np.argsort(E_real)
+    E_sort = E_real[indx]
+    UF_F = UF[indx[:int(NN/2)]]
+    UF_inv = UF_F.T.conj()
+    # print("UF shape is ", UF_F.shape)
+    # print("UF_inv shape is ", UF_inv.shape)
+    # print("W_loop shape is ", W_loop.shape)
+    # Wilson loop winding number calculation
+    if (ik%2 == 0):
+        W_loop = np.dot(W_loop, UF_F)
+    elif (ik%2==1):
+        W_loop = np.dot(W_loop, UF_inv)
+    
     data_plot[ik,0] = ka
     data_plot[ik,1:] = E_sort/(T)
-    
+
+wind_num = (np.log(lg.det(W_loop)).imag)/(2.*np.pi)
+# wind_num = lg.det(W_loop)
+print(wind_num)
 # save the data
 np.savetxt("./Result/FL_disert.dat", data_plot, fmt="%.2e")
 ############################################################

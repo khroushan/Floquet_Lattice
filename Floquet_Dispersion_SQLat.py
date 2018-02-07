@@ -1,18 +1,13 @@
 # Program to calculate the Band Structure of Floquet operator
-# in a honeycomb lattice with stroboscopic driven field
-# for a square lattice
+# in a Square lattice with stroboscopic driven field
 # This program is written to regenerate the results of Ref:
-# T. Kitagawa, et. al. "Topological characterization of periodically driven
-# Study of Floquet system based on paper Phys. Rev. B 82, 235114 (2010)
+# M. Rudner, et. al. "Anomalous Edge States and the Bulk-Edge
+# Correspondence for Periodically Driven 2D Systems."
+# PRX, 3, 031005 (2013)
 # 
 # Author: Amin Ahmdi
-# Date(i): Oct 11, 2017
-# Date(3): Nov  6, 2017   more structured version
-# Date(4): Dec 20, 2017   fix the time interval and
-# the sorting problem. In Ref paper instead of T/3
-# for each time-interval T had been considered.
+# Date(i): Feb 5, 2018
 
-# note that the square lattice part is not ready to use 
 # ################################################################
 import numpy as np
 import numpy.linalg as lg
@@ -20,7 +15,7 @@ import Floquet_2D as FL
 ############################################################
 ##############         Main Program     ####################
 ############################################################
-N_k = 101                                # Num of k-points, 
+N_k = 100                                # Num of k-points, 
                                          # odd number to exclude zero
 N_t = 5                                  # Num of time intervals
 T = 1.                                   # One period of driven field
@@ -34,15 +29,15 @@ E_real = np.zeros((NN), dtype=float)     # eigenenergies
 psi_k = np.zeros((NN,NN), dtype=complex) # matrix of eigenvectors
 
 # different hopping amplitude
-dAB = 0.5*np.pi
-J = 2.5*np.pi                             # hopping amplitude 
+dAB = 0.*np.pi
+J = 1.5*np.pi                             # hopping amplitude 
 data_plot = np.zeros((N_k, NN+1), dtype=float)
 
 # loop over k, first BZ 
 for ik in range(N_k):
 
     ka = ik*2*np.pi/N_k
-    # ka = ik*(np.pi/N_k)
+    
     M_eff = np.eye((NN), dtype=complex)   # aux matrix
     for it in range(N_t):
         if   (it==0 ):
@@ -92,10 +87,20 @@ np.savetxt("./Result/FL_disSQ.dat", data_plot, fmt="%.2e")
 # Use plot_FL.py file for plotting
 
 import matplotlib.pyplot as pl
-fig, ax = pl.subplots(1)
+fig, ax = pl.subplots(figsize=(6,6))
 mm = ['-r', '-k', '-c', '-b', '-y', '-g']
 for i in range(1,NN+1):
     pl.plot(data_plot[:,0], data_plot[:,i], '-k', markersize=1)
-    
+
+ax.set_xlim(0,2*np.pi)
+ax.set_xticks([0, 2*np.pi])
+ax.set_xticklabels([r'$0$', r'$2\pi$'])
+ax.set_xlabel(r'$k_\|$')
+
+ax.set_ylim(-np.pi,np.pi)
+ax.set_yticks([-np.pi, np.pi])
+ax.set_yticklabels([r'$-\pi$', r'$\pi$'])
+ax.set_ylabel('Quasienergy')
+
 pl.show()
         

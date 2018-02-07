@@ -107,7 +107,7 @@ def make_Gr_edge(mlat, J, J1=1, J2=1, J3=1):
 ############################################################
 ##############         Main Program     ####################
 ############################################################
-N_k = 100                                # Num of k-points
+N_k = 200                                # Num of k-points
 N_t = 3                                  # Num of time intervals
 T = 1.                                   # One period of driven field
 # During each iterval T/N_t, the Hamiltonian is time-independent
@@ -173,7 +173,7 @@ np.savetxt("./Result/FL_Edge.dat", data_plot, fmt="%.2e")
 # Use plot_FL.py file for plotting
 
 import matplotlib.pyplot as pl
-fig, ax = pl.subplots(1)
+fig, ax = pl.subplots(1,figsize=(8,8))
 mm = ['-r', '-k', '-c', '-b', '-y', '-g']
 for i in range(1,NN+1):
     pl.plot(data_plot[:,0], data_plot[:,i], '-k', markersize=1)
