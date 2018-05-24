@@ -129,6 +129,9 @@ def make_Gr(mlat, *J):
         elif (i%2==1):
             h[i,i+1] = J[1]
             h[mlat+i,mlat+i+1] = J[0]
+    # longitudinal connection of the last sites
+    if (mlat-1)%2 == 0:
+        h[mlat-1,2*mlat-1] = J[2]
             
     h = h + h.conj().T          # make it hermitian
 

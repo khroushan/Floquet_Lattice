@@ -43,7 +43,7 @@ data_plot = np.zeros((N_k, NN+1), dtype=float)
 # loop over k, first BZ 
 for ik in range(N_k):
 
-    ka = ik*(2.*np.pi)/(N_k)
+    ka = -np.pi + ik*(2.*np.pi)/(N_k)
     # ka = ik*(np.pi/N_k)
     M_eff = np.eye((NN), dtype=complex)   # aux matrix
     for it in range(N_t):

@@ -69,10 +69,50 @@ def make_Gr(mlat, J1=1, J2=1, J3=1):
     return h, tau
 
 ############################################################
+def make_Gr_R(mlat, t_so):
+    """ Constructs the Hamiltonian and the connection 
+    matrix of an armchair graphene strip including Rahba 
+    term.
+    0--o  0--o
+    |  |  |  |
+    o  0--o  0
+    |  |  |  |
+    0--o  0--o
+    |  |  |  |
+    o  0--o  0
+    |  |  |  |
+    0--o  0--o
+    
+    returns: unitcell hamiltonian h
+             hopping matrix       tau
+    """
+    NN = 2*mlat                 # # of sites in one super unitcell
+    tau = -np.zeros((NN, NN),dtype=complex)
+    h = np.zeros((NN,NN), dtype=complex)
+
+    # translational cell's Hamiltonian
+    for i in range(mlat-1):
+        if (i%2==0):
+            h[i,i+1] = J1
+            h[mlat+i,mlat+i+1] = J2
+            h[i,mlat+i] = J3    # horizoltal connection
+        elif (i%2==1):
+            h[i,i+1] = J2
+            h[mlat+i,mlat+i+1] = J1
+            
+            
+    h = h + h.conj().T          # make it hermitian
+    # Hopping matrix
+    for i in range(1,mlat,2):
+        tau[i+mlat,i] = J3
+
+    return h, tau
+
+############################################################
 ##############         Main Program     ####################
 ############################################################
 N_k = 200                                # Num of k-points
-mlat = input("Enter width of graphene strip : ")
+mlat = int(input("Enter width of graphene strip : "))
 NN = 2*mlat                              # # of site in the super-unitcell 
 H_k = np.zeros((NN,NN), dtype=complex)   # k-representation H
 E_k = np.zeros((NN), dtype=complex)      # eigenenergies
@@ -108,7 +148,8 @@ np.savetxt("./Result/E_k_Gr_100.dat", data_plot, fmt='%5e')
 import matplotlib.pyplot as pl
 import matplotlib.ticker as tk
 
-pl.rc("font", family='serif')
+pl.rc("font", family='monospace')
+
 # Use system latex instead of builtin
 pl.rc('text', usetex=True) # It's slower
 
